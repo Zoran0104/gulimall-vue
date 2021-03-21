@@ -1,5 +1,33 @@
 <template>
-<el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+  <el-tree
+    :data="menus"
+    :props="defaultProps"
+    :expand-on-click-node="false"
+    show-checkbox
+    node-key="catId"
+  >
+    <span class="custom-tree-node" slot-scope="{ node, data }">
+      <span>{{ node.label }}</span>
+      <span>
+        <el-button
+          type="text"
+          size="mini"
+          v-if="node.level <= 2"
+          @click="() => append(data)"
+        >
+          Append
+        </el-button>
+        <el-button
+          type="text"
+          size="mini"
+          v-if="node.childNodes.length == 0"
+          @click="() => remove(node, data)"
+        >
+          Delete
+        </el-button>
+      </span>
+    </span>
+  </el-tree>
 </template>
 
 <script>
@@ -7,50 +35,48 @@
 // 例如：import 《组件名称》 from '《组件路径》';
 
 export default {
-    // import引入的组件需要注入到对象中才能使用
-    components: {},
-    data() {
-        return {
-            data: []
-        };
+  // import引入的组件需要注入到对象中才能使用
+  components: {},
+  data() {
+    return {
+      menus: [],
+      defaultProps: {
+        children: "subTree",
+        label: "name"
+      }
+    };
+  },
+  // 监听属性 类似于data概念
+  computed: {},
+  // 监控data中的数据变化
+  watch: {},
+  // 方法集合
+  methods: {
+    getMenu() {
+      this.$http({
+        url: this.$http.adornUrl("/product/category/treeList"),
+        method: "get"
+      }).then(result => (this.menus = result.data.result));
     },
-    // 监听属性 类似于data概念
-    computed: {},
-    // 监控data中的数据变化
-    watch: {},
-    // 方法集合
-    methods: {
-        handleNodeClick(data) {
-            console.log(data);
-        },
-        getMenu() {
-            this.$http({
-                url: this.$http.adornUrl('/product/category/treeList'),
-                method: 'get'
-            }).then(
-                data => console.log(data)
-            )
-        }
-
-    },
-    // 生命周期 - 创建完成（可以访问当前this实例）
-    created() {
-        this.getMenu()
-    },
-    // 生命周期 - 挂载完成（可以访问DOM元素）
-    mounted() {
-
-    },
-    beforeCreate() {}, // 生命周期 - 创建之前
-    beforeMount() {}, // 生命周期 - 挂载之前
-    beforeUpdate() {}, // 生命周期 - 更新之前
-    updated() {}, // 生命周期 - 更新之后
-    beforeDestroy() {}, // 生命周期 - 销毁之前
-    destroyed() {}, // 生命周期 - 销毁完成
-    activated() {}, // 如果页面有keep-alive缓存功能，这个函数会触发
-}
+    append(data) {},
+    remove(node, data) {
+      
+    }
+  },
+  // 生命周期 - 创建完成（可以访问当前this实例）
+  created() {
+    this.getMenu();
+  },
+  // 生命周期 - 挂载完成（可以访问DOM元素）
+  mounted() {},
+  beforeCreate() {}, // 生命周期 - 创建之前
+  beforeMount() {}, // 生命周期 - 挂载之前
+  beforeUpdate() {}, // 生命周期 - 更新之前
+  updated() {}, // 生命周期 - 更新之后
+  beforeDestroy() {}, // 生命周期 - 销毁之前
+  destroyed() {}, // 生命周期 - 销毁完成
+  activated() {} // 如果页面有keep-alive缓存功能，这个函数会触发
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
